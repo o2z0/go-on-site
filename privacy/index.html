@@ -22,7 +22,6 @@
 <p>写真と記録はすべて、お使いの iPhone の中にある Go on 専用の保存領域に置かれます。開発者を含め、他の誰かがそこへアクセスする手段はアプリにはありません。</p>
 
 <h2>3. 保存する内容</h2>
-<!-- EXIF-MEASUREMENT-PENDING: 実測後にここへ 1 文追記する -->
 <p>保存されるのは次のものだけです。</p>
 <ul>
 <li>撮影した写真、または写真ライブラリから取り込んだ画像（JPEG 形式。取り込み時に長辺が 1600px を超える場合は縮小されます）</li>
@@ -30,6 +29,7 @@
 <li>アプリ内部で使う少数の設定値</li>
 </ul>
 <p>氏名・メールアドレスなどの連絡先・端末の識別子・利用状況といった情報は、記録する場所自体がなく、一切収集しません。アカウント登録もありません。</p>
+<p>取り込んだ画像は保存時に JPEG へ再エンコードされます。このため、撮影時の位置情報や撮影日時、カメラの機種といった付随情報は、保存されたファイルには残りません。</p>
 
 <h2>4. 権限について</h2>
 <p>Go on が使う権限は次の 3 つです。</p>
@@ -64,7 +64,6 @@
 <p>All photos and records live in Go on's own private storage area on your iPhone. The app gives no one — including the developer — any way to access it.</p>
 
 <h2>3. What is stored</h2>
-<!-- EXIF-MEASUREMENT-PENDING: 実測後にここへ 1 文追記する -->
 <p>The app stores only the following:</p>
 <ul>
 <li>Photos you take, or images you import from your photo library (saved as JPEG; images longer than 1600px on their longest side are scaled down on import)</li>
@@ -72,6 +71,7 @@
 <li>A handful of internal app settings</li>
 </ul>
 <p>Your name, contact details, device identifiers, and usage data are never collected — the app has nowhere to even store them. There are no accounts to sign up for.</p>
+<p>Images are re-encoded as JPEG when they are saved. As a result, metadata such as capture location, capture time, and camera model is not retained in the stored file.</p>
 
 <h2>4. Permissions</h2>
 <p>Go on uses three permissions:</p>
