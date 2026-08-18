@@ -1,0 +1,45 @@
+:root { color-scheme: light dark; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0 auto; padding: 48px 24px 96px; max-width: 720px;
+  font-family: -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Yu Gothic", sans-serif;
+  font-size: 16px; line-height: 1.85;
+  color: #1a1a1a; background: #f2f2f2;
+}
+h1 { font-size: 26px; margin: 0 0 8px; letter-spacing: .01em; }
+h2 { font-size: 18px; margin: 44px 0 12px; padding-top: 20px; border-top: 1px solid #d8d8d8; }
+h3 { font-size: 16px; margin: 24px 0 8px; }
+p, li { margin: 10px 0; }
+ul { padding-left: 1.3em; }
+img { max-width: 100%; height: auto; border-radius: 18px; }
+a { color: #2f6fd0; }
+.meta { color: #666; font-size: 14px; margin-bottom: 32px; }
+.card { margin: 32px 0; }
+
+/* 言語切替: JS を使わず :has() で行う。既定は日本語 */
+#lang { position: absolute; opacity: 0; pointer-events: none; }
+.lang-toggle {
+  position: fixed; top: 12px; right: 12px; z-index: 10;
+  padding: 6px 12px; border: 1px solid #c8c8c8; border-radius: 999px;
+  background: #fff; color: #1a1a1a; font-size: 13px; cursor: pointer;
+}
+#lang:focus-visible + .lang-toggle { outline: 2px solid #2f6fd0; outline-offset: 2px; }
+.en { display: none; }
+body:has(#lang:checked) .ja { display: none; }
+body:has(#lang:checked) .en { display: block; }
+
+/* トグル内のラベルはブロックだと改行するので inline に固定する。
+   既定 (日本語表示) では「EN」だけ、切替後は「JA」だけを出す */
+.lang-toggle .ja { display: inline; }
+.lang-toggle .en { display: none; }
+body:has(#lang:checked) .lang-toggle .ja { display: none; }
+body:has(#lang:checked) .lang-toggle .en { display: inline; }
+
+@media (prefers-color-scheme: dark) {
+  body { color: #e6e6e6; background: #1f1f1f; }
+  h2 { border-top-color: #333; }
+  a { color: #6096e6; }
+  .meta { color: #999; }
+  .lang-toggle { background: #2a2a2a; color: #e6e6e6; border-color: #444; }
+  #lang:focus-visible + .lang-toggle { outline-color: #6096e6; }
+}
