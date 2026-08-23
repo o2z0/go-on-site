@@ -1,100 +1,493 @@
 <!doctype html>
-<html lang="ja">
+<html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Go on</title>
+<title>Go on — You don’t have to remember it. / もう覚えていなくていい。</title>
+<meta name="description" content="A shopping list you photograph instead of typing. Snap what’s running low, swipe it away once it’s in your cart. Nothing to type, nothing to name, and nothing ever leaves your iPhone.">
+<link rel="canonical" href="https://go-on.o2z0.com/">
+<link rel="icon" href="/favicon.ico" sizes="16x16 32x32 48x48">
+<link rel="apple-touch-icon" href="/assets/favicon-180.png">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://go-on.o2z0.com/">
+<meta property="og:site_name" content="Go on">
+<meta property="og:title" content="Go on — You don’t have to remember it.">
+<meta property="og:description" content="A shopping list you photograph instead of typing. Snap it, swipe it, and it’s gone.">
+<meta property="og:image" content="https://go-on.o2z0.com/assets/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Go on">
+<meta name="twitter:card" content="summary_large_image">
+<!-- 見出しのセリフは self-host（/fonts/）。外部リクエストはこのページに 1 つも無い -->
+<link rel="preload" href="/fonts/newsreader-latin.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="/style.css">
+<style>
+/* ============================================================
+   Go on — LP 固有の演出 CSS
+   共通の地（トークン・書体・言語トグル・CTA・footer）は /style.css
+   ============================================================ */
+section { padding: 20vh 0; }
+
+/* ============ 1. hero (centered) ============ */
+.hero {
+  min-height: 100svh; display: flex; flex-direction: column;
+  justify-content: center; padding: 0; text-align: center;
+}
+.claim {
+  font-size: clamp(38px, 7vw, 54px); line-height: 1.22; margin: 0 0 14px;
+  font-weight: 500; color: var(--ink); text-wrap: balance;  /* no orphaned "it." */
+}
+.claim .w { display: inline-block; }
+.claim em { font-style: italic; }
+.hero .sub { font-size: 20px; color: var(--muted); margin: 0 0 7vh; }
+.hero-brand {
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 18px; font-size: var(--brand-text); line-height: 1; letter-spacing: -.035em;
+  color: var(--ink); margin: 0 0 5vh;
+}
+.hero-brand img, .seal { width: var(--brand-icon); height: var(--brand-icon); translate: 4% 0; }  /* optical centre: the mass sits bottom-left */
+.ja .claim { font-size: clamp(26px, 7.2vw, 50px); }  /* 文節 span 単位でのみ折り返す（≥333px では 1 行） */
+
+/* ============ 2. product shot ============ */
+.shot-wrap { text-align: center; }
+/* CSS device frame: ink bezel around the real screenshot (no mockup asset needed) */
+.device {
+  position: relative; display: inline-block; padding: 11px;
+  background: #1c1a16; border-radius: 52px;
+  box-shadow:
+    0 30px 80px rgba(32, 29, 24, .22),
+    inset 0 0 0 1.5px rgba(255, 255, 255, .08);   /* faint bezel highlight */
+}
+.device img { display: block; width: min(290px, 70vw); border-radius: 42px; }
+/* side buttons */
+.device::before, .device::after {
+  content: ""; position: absolute; width: 3px; border-radius: 2px; background: #2a2722;
+}
+.device::before { left: -3px; top: 21%; height: 16%; }                                 /* volume */
+.device::after  { right: -3px; top: 26%; height: 13%; }                                /* power */
+.shot-wrap { text-align: center; }
+
+/* ============ 3. mental-load scene ============ */
+/* 既定 = 静止版。scroll-driven が使えない環境と prefers-reduced-motion:reduce では
+   これがそのまま出る。ピン留め（position:sticky）と長い尺（420vh 等）は
+   演出そのものなので、演出と同じ @supports / @media の中にしか置かない。
+   ここを外に出すと「アニメは動かないのに尺だけ残る」= 1,005vh の空スクロールになる。 */
+.scene { padding: 12vh 0; }
+.scene .sticky {
+  display: flex; align-items: center; justify-content: center;
+}
+.stage {
+  position: relative; width: min(680px, 92vw);
+  display: flex; flex-wrap: wrap; gap: 10px 12px;
+  justify-content: center; align-items: center;
+}
+.bubble {
+  /* static = インラインの left/right/top を無視して素直に流す（静止版のときだけ） */
+  position: static; background: #fffdf6; border: 1px solid #e3dccb;
+  border-radius: 999px; padding: 10px 20px; font-size: 15px; color: #55503f;
+  box-shadow: 0 10px 28px rgba(32, 29, 24, .08); rotate: var(--r, 0deg);
+  white-space: nowrap;
+}
+.quiet-line {
+  position: static; width: 100%; margin-top: 8vh;
+  display: flex; flex-direction: column;
+  justify-content: center; text-align: center; padding: 0;
+}
+.quiet-line p { font-size: clamp(26px, 4.6vw, 38px); line-height: 1.55; margin: 0; }
+.quiet-line .ja p { font-size: clamp(17px, 4.3vw, 34px); }
+.quiet-line .ja .u { display: inline-block; }  /* 文節単位でのみ折り返す（≥351px では 1 行） */
+
+/* ============ 4. steps ============ */
+.step-title { font-size: clamp(40px, 7vw, 52px); font-weight: 500; line-height: 1; margin: 0 0 22px; }  /* one word, serif */
+.step-lead { font-size: clamp(20px, 3.2vw, 24px); font-weight: 600; line-height: 1.45; margin: 0 0 8px; letter-spacing: -.01em; }
+
+.snap-cards { display: flex; justify-content: center; gap: 0; margin: 64px 0 0; }
+.snap-cards img {
+  width: clamp(88px, 30%, 200px); aspect-ratio: 1; height: auto; border-radius: 20px; object-fit: cover;  /* 3 fit inside the column at 320px */
+  box-shadow: 0 16px 40px rgba(32, 29, 24, .18); border: 5px solid #fffdf6;
+}
+.snap-cards img:nth-child(1) { rotate: -5deg; translate: 16px 12px; }
+.snap-cards img:nth-child(2) { rotate: 2deg; z-index: 1; }
+.snap-cards img:nth-child(3) { rotate: 6deg; translate: -16px 14px; }
+
+/* swipe scene: check vs swipe comparison */
+.step-inner { text-align: left; width: min(100%, 640px); padding: 0 24px; }
+.compare {
+  display: flex; gap: clamp(28px, 7vw, 72px); justify-content: center;
+  align-items: flex-start; margin-top: 7vh; flex-wrap: wrap; text-align: center;
+}
+/* 並列に必要なのはビューポート 448px 以上（ペイン下限 186px ×2 + gap 28 + step-inner の padding 48）。
+   最大の iPhone でも 440px なので、実機は必ず縦積みになる = wrap は仕様。詰めて並列化しない。
+   ペインを 186px 未満にすると .txt { white-space: nowrap } の「return the book」が溢れる。 */
+.pane { width: clamp(200px, 34vw, 260px); }
+.visual { aspect-ratio: 1; display: grid; align-items: center; }  /* same height on both sides → captions align */
+.pane:first-child { position: relative; z-index: 1; }  /* the swiped card slips away BEHIND the paper list */
+.todo-card {
+  background: #fffdf6; border: 1px solid #e3dccb; border-radius: 18px;
+  padding: 16px 20px; text-align: left;
+  box-shadow: 0 14px 36px rgba(32, 29, 24, .12);
+  background-image: repeating-linear-gradient(transparent 0 45px, rgba(32,29,24,.05) 45px 46px);
+}
+.todo-item { display: flex; gap: 12px; align-items: center; font-size: 16px; color: #55503f; padding: 11px 0; }
+.box {
+  width: 20px; height: 20px; border: 1.5px solid #a49b87; border-radius: 6px;
+  display: grid; place-items: center; flex: none;
+}
+/* CSS checkmark (no glyph baseline drift) */
+.tick {
+  width: 6px; height: 11px; border-right: 2px solid #6f6a5e; border-bottom: 2px solid #6f6a5e;
+  transform: rotate(45deg) translate(-1px, -1px); opacity: 0;
+}
+.txt { position: relative; white-space: nowrap; }
+.strike {
+  position: absolute; left: -2px; right: -2px; top: 54%; height: 1.5px;
+  background: #8a8371; transform: scaleX(0); transform-origin: left;
+}
+.deck { position: relative; width: 100%; aspect-ratio: 1; margin: 0 auto; }
+.deck img {
+  position: absolute; inset: 0; width: 100%; height: 100%;
+  border-radius: 22px; object-fit: cover; border: 5px solid #fffdf6;
+  box-shadow: 0 16px 44px rgba(32, 29, 24, .2);
+}
+.deck .under { scale: .92; translate: 0 8px; opacity: .85; }
+.cap { font-size: 15px; margin: 20px 0 0; }
+.cap small { display: block; font-size: 13px; color: #a49b87; margin-top: 2px; }
+
+/* ============ 5. trust ============ */
+.trust { border-top: 1px solid #e3dccb; border-bottom: 1px solid #e3dccb; }
+.trust h2 { font-size: 30px; }
+
+/* ============ 6. belief ============ */
+.belief { background: var(--ink); color: var(--cream); padding: 26vh 24px; text-align: center; }
+.belief p {
+  font-size: clamp(32px, 6vw, 50px); line-height: 1.35; margin: 0;
+  font-weight: 400;
+}
+.belief em { font-style: italic; color: #fff; }
+.belief .ja .u { display: inline-block; }  /* 文節単位でのみ折り返す */
+.belief .ja p { font-size: clamp(22px, 6vw, 44px); }  /* 320px でも <br> の 2 行構造を保つ */
+
+/* ============ 7. what we don't let go of ============ */
+.keeps li { list-style: none; margin: 34px 0; padding: 0; }
+.keeps { padding: 0; margin: 36px 0 0; }
+.keeps b { display: block; font-size: 20px; margin-bottom: 4px; }
+.pnum { color: var(--sage); font-weight: 700; font-size: 14px; letter-spacing: .1em; margin-right: 10px; }
+
+/* ============ 8. finale ============ */
+.finale { min-height: 100svh; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
+.finale-content {
+  display: flex; flex-direction: column; align-items: center;
+  transition: opacity .9s ease, filter .9s ease, visibility 0s linear 0s;
+}
+.finale-content.faded { opacity: 0; filter: blur(6px); visibility: hidden; transition-delay: 0s, 0s, .9s; }  /* invisible = unfocusable */
+.seal { margin: 0 0 18px; }
+.goon {
+  font-size: var(--brand-text); line-height: 1; margin: 0 0 7vh;
+  font-weight: 500;
+}
+/* "Go on" は HERO / FINALE で同一（.serif の letter-spacing:0 に負けないよう明示指定） */
+.hero-brand .serif, .goon { letter-spacing: -.035em; }
+
+/* ============================================================
+   scroll-driven animations
+   ============================================================ */
+@media (prefers-reduced-motion: no-preference) {
+  @supports ((animation-timeline: view()) and (animation-range: entry)) {
+
+    /* --- pinned-scene layout（演出が効く環境でだけ尺とピン留めを与える）--- */
+    .scene { padding: 0; }
+    .scene .sticky { position: sticky; top: 0; height: 100svh; overflow: hidden; }
+    .scene-load  { height: 420vh; }   /* longer = slower: thoughts surface, then dissolve, unhurried */
+    .scene-snap  { height: 205vh; }   /* pinned: text alone first, then the photos pop in（末尾の空尺 56vh→21vh、ビート位置は不変） */
+    .scene-swipe { height: 380vh; }   /* check → check → swipe → swipe → nothing left */
+    .stage { display: block; height: 60svh; }
+    .bubble { position: absolute; }
+    .quiet-line {
+      /* escapes the 680px stage: centered on the viewport, not the stage box */
+      position: absolute; top: 0; bottom: 0; left: 50%; transform: translateX(-50%);  /* transform = centering; `translate` stays free for the fade-in keyframe */
+      width: min(92vw, 960px); margin-top: 0;
+    }
+
+    /* hero words dissolve — the "remember" word goes first */
+    @keyframes word-gone { to { opacity: 0; filter: blur(4px); } }
+    .claim .w { animation: word-gone linear both; animation-timeline: scroll(root); }
+    .claim .w1 { animation-range: 12vh 34vh; }
+    .claim .w2 { animation-range: 4vh 20vh; }
+    .claim .w3 { animation-range: 14vh 36vh; }
+    .hero .sub, .hero .cta-row, .hero .hero-brand {
+      animation: word-gone linear both; animation-timeline: scroll(root);
+      animation-range: 16vh 40vh;
+    }
+
+    /* the page forgets what you've read */
+    @keyframes bye { to { opacity: 0; translate: 0 -28px; } }
+    .forgets { animation: bye linear both; animation-timeline: view(); animation-range: exit 10% exit 85%; }
+
+    @keyframes settle { from { opacity: 0; translate: 0 22px; } }
+    .settles { animation: settle linear both; animation-timeline: view(); animation-range: entry 20% entry 70%; }
+    .forgets.settles {
+      animation: settle linear both, bye linear both;
+      animation-timeline: view(), view();
+      animation-range: entry 20% entry 70%, exit 10% exit 85%;
+    }
+
+    /* mental load: thoughts pop up one by one... */
+    .scene-load { view-timeline: --tl-load block; }
+    @keyframes pop {
+      0%   { opacity: 0; scale: .5; }
+      70%  { opacity: 1; scale: 1.07; }
+      100% { opacity: 1; scale: 1; }
+    }
+    /* no explicit `from`: before its range it passes the pop animation's output through
+       (otherwise the backwards fill would force opacity 1 and show tiny bubbles from the start) */
+    @keyframes bubble-gone {
+      to { opacity: 0; filter: blur(5px); translate: 0 -24px; }
+    }
+    .bubble {
+      animation: pop linear both, bubble-gone linear both;
+      animation-timeline: --tl-load, --tl-load;
+    }
+    .b1 { animation-range: contain 2%  contain 7%,  contain 32% contain 44%; }
+    .b2 { animation-range: contain 5%  contain 10%, contain 36% contain 48%; }
+    .b3 { animation-range: contain 8%  contain 13%, contain 40% contain 52%; }
+    .b4 { animation-range: contain 11% contain 16%, contain 44% contain 56%; }
+    .b5 { animation-range: contain 14% contain 19%, contain 48% contain 60%; }
+    .b6 { animation-range: contain 17% contain 22%, contain 52% contain 64%; }
+    .b7 { animation-range: contain 20% contain 25%, contain 56% contain 68%; }
+    @keyframes line-in { from { opacity: 0; translate: 0 18px; } }
+    .quiet-line { animation: line-in linear both; animation-timeline: --tl-load; animation-range: contain 70% contain 86%; }
+
+    /* swipe scene: the check stays, the card goes */
+    /* snap: photos pop in one by one — left, right, then center */
+    /* pinned scene: text sits alone first, then left → right → center pop in */
+    .scene-snap { view-timeline: --tl-snap block; }
+    .snap-cards img { animation: pop linear both; animation-timeline: --tl-snap; }
+    .snap-cards img:nth-child(1) { animation-range: contain 24% contain 37.3%; }
+    .snap-cards img:nth-child(3) { animation-range: contain 45.3% contain 58.7%; }
+    .snap-cards img:nth-child(2) { animation-range: contain 66.7% contain 80%; }
+
+    .scene-swipe { view-timeline: --tl-swipe block; }
+    @keyframes swipe-left {
+      0%   { transform: translateX(0) rotate(0); opacity: 1; }
+      55%  { opacity: 1; }
+      100% { transform: translateX(-130%) rotate(-15deg); opacity: 0; }
+    }
+    .deck .top { animation: swipe-left linear both; animation-timeline: --tl-swipe; animation-range: contain 42% contain 62%; }
+    @keyframes under-up { to { scale: 1; translate: 0 0; opacity: 1; } }
+    /* second card: rises, then swipes away too — nothing is left */
+    @keyframes swipe-left-2 {            /* no 0% frame: inherits under-up's output until its own range starts */
+      55%  { opacity: 1; }
+      100% { transform: translateX(-130%) rotate(-15deg); opacity: 0; }
+    }
+    .deck .under {
+      animation: under-up linear both, swipe-left-2 linear both;
+      animation-timeline: --tl-swipe, --tl-swipe;
+      animation-range: contain 56% contain 68%, contain 74% contain 92%;
+    }
+    /* attention: dim the side that isn't moving */
+    @keyframes focus-in  { from { opacity: .3; } to { opacity: 1; } }
+    @keyframes focus-out { from { opacity: 1; }  to { opacity: .3; } }
+    .pane-swipe { animation: focus-in  linear both; animation-timeline: --tl-swipe; animation-range: contain 32% contain 40%; }
+    .pane-todo  { animation: focus-out linear both; animation-timeline: --tl-swipe; animation-range: contain 34% contain 42%; }
+    @keyframes tick-in { to { opacity: 1; } }
+    #todo-a .tick { animation: tick-in linear both; animation-timeline: --tl-swipe; animation-range: contain 6% contain 11%; }
+    #todo-a .strike { animation: strike-in linear both; animation-timeline: --tl-swipe; animation-range: contain 9% contain 17%; }
+    #todo-a .txt { animation: fade-label linear both; animation-timeline: --tl-swipe; animation-range: contain 9% contain 17%; }
+    #todo-b .tick { animation: tick-in linear both; animation-timeline: --tl-swipe; animation-range: contain 20% contain 25%; }
+    @keyframes strike-in { to { transform: scaleX(1); } }
+    #todo-b .strike { animation: strike-in linear both; animation-timeline: --tl-swipe; animation-range: contain 23% contain 31%; }
+    @keyframes fade-label { to { color: #b0a893; } }
+    #todo-b .txt { animation: fade-label linear both; animation-timeline: --tl-swipe; animation-range: contain 23% contain 31%; }
+  }
+}
+</style>
 </head>
 <body>
-<input type="checkbox" id="lang">
-<label class="lang-toggle" for="lang"><span class="ja">EN</span><span class="en">JA</span></label>
 
-<h1>Go on</h1>
+<input type="checkbox" id="lang" role="switch" aria-label="日本語で表示 / Show in English">
+<label class="lang-toggle" for="lang" aria-hidden="true"><span class="en" lang="en">日本語</span><span class="ja" lang="ja">EN</span></label>
 
-<!-- 1. Hero -->
-<div class="ja" lang="ja">
-<p>覚えておかなくていい。撮っておけばいい。</p>
-</div>
-<div class="en" lang="en">
-<p>You don&rsquo;t have to remember it. Just take a photo.</p>
-<p class="meta">Get it out of your head and into your camera roll.</p>
-</div>
+<!-- 1. HERO (centered, brand under the copy) -->
+<section class="hero">
+  <main>
+    <div class="en" lang="en">
+      <h1 class="claim serif">
+        <span class="w w1">You don&rsquo;t have to</span>
+        <span class="w w2"><em>remember</em></span>
+        <span class="w w3">it.</span>
+      </h1>
+      <p class="sub">The photo does.</p>
+    </div>
+    <div class="ja" lang="ja">
+      <h1 class="claim serif">
+        <span class="w w1">もう</span><span class="w w2">覚えて</span><span class="w w3">いなくていい。</span>
+      </h1>
+      <p class="sub">撮ったから、大丈夫。</p>
+    </div>
+    <p class="hero-brand"><img src="/assets/mark.png" alt="" width="256" height="256" fetchpriority="high" decoding="async"><span class="serif">Go on</span></p>
+    <p class="cta-row"><a class="cta" href="https://apps.apple.com/app/id6797468303">Download on the App&nbsp;Store</a></p>
+  </main>
+</section>
 
-<!-- SHOT-SLOT(grid): スクリーンショット未撮影。撮れたら次を戻す
-     <div class="card"><img src="/shots/grid.png" alt="" width="390" height="844"></div> -->
-
-<!-- 3. 使い方 3 ステップ -->
-<div class="ja" lang="ja">
-<h2>使い方は3ステップ</h2>
-<h3>1. 撮る</h3>
-<p>わざわざテキストを打つほどでもない、カメラロールに残すほどでもない。そういうものを、その場で撮ります。</p>
-<ul>
-<li>もうすぐ切れる日用品</li>
-<li>散歩中にちょっと気になって後で調べたいもの</li>
-<li>読書のドッグイヤー代わり</li>
-</ul>
-<p>などなど、自由に使えます。</p>
-<h3>2. スワイプする</h3>
-<p>写真を左右に振り分けます。済んだもの・もう要らないものは左へ、まだのものは右へ。</p>
-<h3>3. 消える</h3>
-<p>左に流した写真はリストから消えます。間違えたら、端末を振ると直前の1枚が戻ります。</p>
-</div>
-<div class="en" lang="en">
-<h2>How it works</h2>
-<h3>1. Snap</h3>
-<p>Things not worth typing out, and not worth keeping in your camera roll. Just photograph them.</p>
-<ul>
-<li>A household item that is running low</li>
-<li>Something you noticed on a walk and want to look up later</li>
-<li>A page of a book, instead of folding the corner</li>
-</ul>
-<p>And whatever else you find it useful for.</p>
-<h3>2. Swipe</h3>
-<p>Sort the photos left and right: left for handled or no longer needed, right for not yet.</p>
-<h3>3. Gone</h3>
-<p>Photos you swipe left disappear from the list. Swiped the wrong one? Shake your phone to bring it back.</p>
+<!-- 3. MENTAL LOAD -->
+<div class="scene scene-load">
+  <div class="sticky">
+    <div class="stage">
+      <span class="bubble b1" style="left:4%;  top:10%; --r:-6deg"><span class="en" lang="en">milk</span><span class="ja" lang="ja">牛乳</span></span>
+      <span class="bubble b2" style="right:10%; top:6%;  --r:5deg"><span class="en" lang="en">batteries</span><span class="ja" lang="ja">電池</span></span>
+      <span class="bubble b3" style="left:26%; top:28%; --r:-2deg"><span class="en" lang="en">that book</span><span class="ja" lang="ja">この本</span></span>
+      <span class="bubble b4" style="right:4%; top:34%; --r:8deg"><span class="en" lang="en">detergent</span><span class="ja" lang="ja">洗剤</span></span>
+      <span class="bubble b5" style="left:10%; top:58%; --r:4deg"><span class="en" lang="en">screws</span><span class="ja" lang="ja">ネジ</span></span>
+      <span class="bubble b6" style="left:44%; top:66%; --r:-7deg"><span class="en" lang="en">a poster</span><span class="ja" lang="ja">ポスター</span></span>
+      <span class="bubble b7" style="right:3%; top:76%; --r:3deg"><span class="en" lang="en">that shop</span><span class="ja" lang="ja">あのお店</span></span>
+      <div class="quiet-line">
+        <div class="en" lang="en"><p class="serif">It&rsquo;s okay to forget.<br>You can stop trying not to.</p></div>
+        <div class="ja" lang="ja"><p class="serif">忘れてもいい。<br><span class="u">忘れない努力から、</span><span class="u">あなたを自由にする。</span></p></div>
+      </div>
+    </div>
+  </div>
 </div>
 
-<!-- SHOT-SLOT(swipe): スクリーンショット未撮影。撮れたら次を戻す
-     <div class="card"><img src="/shots/swipe.png" alt="" width="390" height="844"></div> -->
-
-<!-- 4. 端末内完結 -->
-<div class="ja" lang="ja">
-<h2>すべて端末の中に</h2>
-<p>写真もリストも、すべてあなたの iPhone の中にあります。アカウント登録はいりません。サーバーもなく、アプリが通信することは一度もありません。</p>
-</div>
-<div class="en" lang="en">
-<h2>Everything stays on your iPhone</h2>
-<p>No account, no sign-in, no server. The app never makes a network request. Your photos and your list live on your phone, and nowhere else.</p>
-</div>
-
-<!-- 5. 原則 3 つ -->
-<div class="ja" lang="ja">
-<h2>設計の原則</h2>
-<ul>
-<li><strong>止めない。</strong>入力は、思考や生活の流れを止めない。</li>
-<li><strong>残さない。</strong>終わったものは、気持ちよく視界から消える。</li>
-<li><strong>閉じられる。</strong>アプリは長く使われるためではなく、早く閉じられるためにある。</li>
-</ul>
-</div>
-<div class="en" lang="en">
-<h2>Design principles</h2>
-<ul>
-<li><strong>Don&rsquo;t interrupt.</strong> Capturing something should never stop the flow of your life.</li>
-<li><strong>Leave nothing behind.</strong> What&rsquo;s done is gone from sight &mdash; and that feels good.</li>
-<li><strong>Built to be closed.</strong> The app exists to be closed quickly, not used for long.</li>
-</ul>
+<!-- 4a. SNAP — pinned scene -->
+<div class="scene scene-snap steps">
+  <div class="sticky">
+    <div class="step-inner">
+    <h2 class="step-title serif" lang="en">Snap</h2>
+    <div class="en" lang="en">
+      <p class="step-lead">Notice it. Snap it. Hand it off.</p>
+      <p class="dim">Anything running low. Anything you&rsquo;d rather not keep in your head.</p>
+    </div>
+    <div class="ja" lang="ja">
+      <p class="step-lead">気になったら、撮る。預ける。</p>
+      <p class="dim">切れかけの日用品や、わざわざ写真に残すほどでもないことも。</p>
+    </div>
+    <div class="snap-cards">
+      <img src="/assets/card-coffee.webp" alt="" width="480" height="480" loading="lazy">
+      <img src="/assets/card-battery.webp" alt="" width="480" height="480" loading="lazy">
+      <img src="/assets/card-pasta.webp" alt="" width="480" height="480" loading="lazy">
+    </div>
+    </div>
+  </div>
 </div>
 
-<!-- 6. フッタ -->
-<div class="card">
-<div class="ja" lang="ja">
-<p class="meta"><a href="/privacy">プライバシーポリシー</a> · <a href="/support">サポート</a></p>
+<!-- 4b. SWIPE — check vs swipe, side by side -->
+<div class="scene scene-swipe steps">
+  <div class="sticky">
+    <div class="step-inner">
+      <h2 class="step-title serif" lang="en">Swipe</h2>
+      <div class="en" lang="en">
+        <p class="step-lead">A check marks it done.<br>A swipe lets it go.</p>
+      </div>
+      <div class="ja" lang="ja">
+        <p class="step-lead">チェックは「完了」。<br>スワイプは「手放す」。</p>
+      </div>
+      <div class="compare">
+        <div class="pane pane-todo">
+          <div class="visual"><div class="todo-card">
+            <div class="todo-item" id="todo-a"><span class="box"><span class="tick"></span></span><span class="txt"><span class="en" lang="en">buy milk</span><span class="ja" lang="ja">牛乳を買う</span><span class="strike"></span></span></div>
+            <div class="todo-item" id="todo-b"><span class="box"><span class="tick"></span></span><span class="txt"><span class="en" lang="en">new batteries</span><span class="ja" lang="ja">電池を替える</span><span class="strike"></span></span></div>
+            <div class="todo-item"><span class="box"><span class="tick"></span></span><span class="txt"><span class="en" lang="en">return the book</span><span class="ja" lang="ja">本を返す</span><span class="strike"></span></span></div>
+          </div></div>
+          <p class="cap dim"><span class="en" lang="en">A check marks it done.</span><span class="ja" lang="ja">チェックは「完了」。</span></p>
+        </div>
+        <div class="pane pane-swipe">
+          <div class="visual"><div class="deck">
+            <img class="under" src="/assets/card-paper.webp" alt="" width="480" height="480" loading="lazy">
+            <img class="top" src="/assets/card-battery.webp" alt="" width="480" height="480" loading="lazy">
+          </div></div>
+          <p class="cap dim">
+            <span class="en" lang="en">A swipe lets it go.</span><span class="ja" lang="ja">スワイプは「手放す」。</span>
+            <small><span class="en" lang="en">Swiped the wrong one? Shake to bring it back.</span><span class="ja" lang="ja">間違えたら、振れば戻る。</span></small>
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
-<div class="en" lang="en">
-<p class="meta"><a href="/privacy">Privacy Policy</a> · <a href="/support">Support</a></p>
-</div>
-</div>
+
+<!-- 4c. PRODUCT SHOT — the real screen, after you know what it does -->
+<section class="forgets settles shot-wrap">
+  <div class="device"><img src="/assets/grid.webp" alt="Go on — a grid of photos of everyday things" width="780" height="1688" loading="lazy" decoding="async"></div>
+</section>
+
+<!-- 5. TRUST -->
+<section class="trust forgets settles">
+  <main>
+    <div class="en" lang="en">
+      <h2>Everything stays on your iPhone</h2>
+      <p class="dim">No account. No server. The app never makes a network request. Your photos and your list live on your phone, and nowhere else.</p>
+    </div>
+    <div class="ja" lang="ja">
+      <h2>すべて端末の中に</h2>
+      <p class="dim">アカウント不要。サーバーなし。アプリは一度も通信しない。写真もリストも、あなたの iPhone の中だけ。</p>
+    </div>
+  </main>
+</section>
+
+<!-- 6. BELIEF -->
+<section class="belief forgets">
+  <div class="en" lang="en"><p class="serif">Let the photo remember.<br>Your mind has <em>thinking</em> to do.</p></div>
+  <div class="ja" lang="ja"><p class="serif"><span class="u">覚えるのは、</span><span class="u">写真の仕事。</span><br><span class="u">頭は、</span><span class="u">考えるために。</span></p></div>
+</section>
+
+<!-- 7. NOT YOUR USUAL APP — what it isn't draws the outline -->
+<section class="forgets settles">
+  <main>
+    <div class="en" lang="en">
+      <h2>Not a to-do list. Not a photo app.</h2>
+      <ul class="keeps">
+        <li><b><span class="pnum">01</span>Not a to-do list.</b><span class="dim">It doesn&rsquo;t record what&rsquo;s done. Done things disappear.</span></li>
+        <li><b><span class="pnum">02</span>Not a photo app.</b><span class="dim">You don&rsquo;t shoot to keep. You shoot to let go.</span></li>
+        <li><b><span class="pnum">03</span>Not an app that wants more of you.</b><span class="dim">No notifications, no feed, no streaks. It&rsquo;s built to be closed.</span></li>
+      </ul>
+    </div>
+    <div class="ja" lang="ja">
+      <h2>ToDo でも、写真アプリでもない。</h2>
+      <ul class="keeps">
+        <li><b><span class="pnum">01</span>ToDo アプリではない。</b><span class="dim">完了を記録しない。終わったものは、消える。</span></li>
+        <li><b><span class="pnum">02</span>写真アプリではない。</b><span class="dim">残すために撮るんじゃない。手放すために撮る。</span></li>
+        <li><b><span class="pnum">03</span>もっと使ってほしいアプリではない。</b><span class="dim">通知も、フィードも、連続記録もない。閉じるためにある。</span></li>
+      </ul>
+    </div>
+  </main>
+</section>
+
+<!-- 8. FINALE — just the mark and the name; they too may be forgotten -->
+<section class="finale">
+  <div class="finale-content">
+    <img class="seal" src="/assets/mark.png" alt="" width="256" height="256" loading="lazy">
+    <p class="goon serif">Go on.</p>
+    <p><a class="cta" href="https://apps.apple.com/app/id6797468303">Download on the App&nbsp;Store</a></p>
+  </div>
+</section>
+
+<footer>
+  <span class="en" lang="en"><a href="/privacy/">Privacy Policy</a> · <a href="/support/">Support</a></span>
+  <span class="ja" lang="ja"><a href="/privacy/">プライバシーポリシー</a> · <a href="/support/">サポート</a></span>
+</footer>
+
+<script>
+/* finale idle-fade: even the name is yours to forget.
+   fades after ~1.8s of stillness at the very bottom; any movement brings it back. */
+(() => {
+  if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  const content = document.querySelector('.finale-content');
+  const finale = document.querySelector('.finale');
+  let timer = null, inertTimer = null, atBottom = false, fadedOnce = false;
+  // once faded out, the CTA must not stay focusable/clickable while invisible → `inert` after the fade ends
+  const fade = () => { content.classList.add('faded'); fadedOnce = true; clearTimeout(inertTimer); inertTimer = setTimeout(() => { content.inert = true; }, 900); };
+  const show = () => { clearTimeout(inertTimer); content.inert = false; content.classList.remove('faded'); };
+  const arm = (ms) => { clearTimeout(timer); if (atBottom) timer = setTimeout(fade, ms); };
+  // the first fade after arriving is guaranteed: input is ignored until it has happened once
+  const wake = () => { if (!atBottom || !fadedOnce) return; show(); arm(1800); };
+  new IntersectionObserver((entries) => {
+    atBottom = entries[0].intersectionRatio > 0.85;
+    if (atBottom) { fadedOnce = false; arm(1000); }
+    else { clearTimeout(timer); show(); fadedOnce = false; }
+  }, { threshold: [0, 0.85] }).observe(finale);
+  ['scroll', 'pointermove', 'pointerdown', 'keydown', 'touchstart'].forEach(ev =>
+    addEventListener(ev, wake, { passive: true }));
+})();
+</script>
 </body>
 </html>

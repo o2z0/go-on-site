@@ -1,45 +1,123 @@
-:root { color-scheme: light dark; }
-html { -webkit-text-size-adjust: 100%; }
-body {
-  margin: 0 auto; padding: 48px 24px 96px; max-width: 720px;
-  font-family: -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Yu Gothic", sans-serif;
-  font-size: 16px; line-height: 1.85;
-  color: #1a1a1a; background: #f2f2f2;
-}
-h1 { font-size: 26px; margin: 0 0 8px; letter-spacing: .01em; }
-h2 { font-size: 18px; margin: 44px 0 12px; padding-top: 20px; border-top: 1px solid #d8d8d8; }
-h3 { font-size: 16px; margin: 24px 0 8px; }
-p, li { margin: 10px 0; }
-ul { padding-left: 1.3em; }
-img { max-width: 100%; height: auto; border-radius: 18px; }
-a { color: #2f6fd0; }
-.meta { color: #666; font-size: 14px; margin-bottom: 32px; }
-.card { margin: 32px 0; }
+/* ============================================================
+   Go on — 全ページ共通の地
+   トーン A: Paper & Ink（生成り / 墨 / セージ / クリーム）
 
-/* 言語切替: JS を使わず :has() で行う。既定は日本語 */
+   ここには「3 ページで共有するもの」だけを置く。
+   LP 固有の演出 CSS は index.html の <style> にある。
+   ドキュメント 2 ページ（/privacy/ /support/）は <body class="doc"> で
+   読み物向けの寸法に切り替える。
+   ============================================================ */
+
+/* --- self-hosted Newsreader ---------------------------------
+   Google Fonts の latin スライスを軸ごと絞ったサブセット。
+   roman = wght 400..500 可変 / opsz 36 固定、italic = wght 400 固定 / opsz 36 固定。
+   LP のセリフ実寸が 26–52px なので opsz は 36 に寄せて可変軸を落としてある
+   （278KB → 33KB）。unicode-range で JA 表示のときは取りに行かせない。
+   ライセンス: SIL Open Font License 1.1（同梱・再配布可）
+   ------------------------------------------------------------ */
+@font-face {
+  font-family: "Newsreader";
+  src: url("/fonts/newsreader-latin.woff2") format("woff2");
+  font-weight: 400 500;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+0020-007E, U+00A0, U+00B7, U+2013-2014, U+2018-2019, U+201C-201D, U+2026;
+}
+@font-face {
+  font-family: "Newsreader";
+  src: url("/fonts/newsreader-latin-italic.woff2") format("woff2");
+  font-weight: 400;
+  font-style: italic;
+  font-display: swap;
+  unicode-range: U+0020-007E, U+00A0, U+00B7, U+2013-2014, U+2018-2019, U+201C-201D, U+2026;
+}
+
+:root {
+  --paper: #f7f5ee;
+  --ink: #201d18;
+  --muted: #6f6a5e;
+  --sage: #a8b299;
+  --cream: #f1ead9;
+  --rule: #e3dccb;
+  --brand-icon: clamp(96px, 15vw, 132px);   /* mark: big */
+  --brand-text: clamp(36px, 6vw, 52px);     /* "Go on": smaller than the mark */
+  color-scheme: light;
+}
+
+* { box-sizing: border-box; }
+html { overflow-x: clip; }  /* never let the layout viewport inflate (keeps position:fixed honest on 320px) */
+body {
+  margin: 0; background: var(--paper); color: var(--ink);
+  font-family: -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Yu Gothic", sans-serif;
+  font-size: 17px; line-height: 1.85; letter-spacing: .01em;
+  -webkit-text-size-adjust: 100%;
+}
+main { max-width: 640px; margin: 0 auto; padding: 0 24px; }
+.serif {
+  font-family: "Newsreader", "Hiragino Mincho ProN", "Yu Mincho", serif;
+  font-size-adjust: from-font;
+  font-weight: 500; letter-spacing: 0;
+}
+h2 { font-size: 26px; margin: 0 0 14px; font-weight: 650; letter-spacing: -.01em; }
+p { margin: 10px 0; }
+.dim { color: var(--muted); }
+img { max-width: 100%; height: auto; }
+
+/* --- language toggle (CSS only, EN default) ---
+   3 ページとも EN 既定。App Store の審査は英語で読まれるため、
+   フッタから /privacy/ に飛んだときに言語が入れ替わらないよう全ページで揃える。 */
 #lang { position: absolute; opacity: 0; pointer-events: none; }
 .lang-toggle {
-  position: fixed; top: 12px; right: 12px; z-index: 10;
-  padding: 6px 12px; border: 1px solid #c8c8c8; border-radius: 999px;
-  background: #fff; color: #1a1a1a; font-size: 13px; cursor: pointer;
+  position: fixed; top: 14px; right: 14px; z-index: 10;
+  padding: 7px 14px; border: 1px solid #d9d3c4; border-radius: 999px;
+  background: rgba(255, 253, 246, .8); backdrop-filter: blur(10px);
+  color: var(--ink); font-size: 13px; cursor: pointer; user-select: none;
 }
-#lang:focus-visible + .lang-toggle { outline: 2px solid #2f6fd0; outline-offset: 2px; }
-.en { display: none; }
-body:has(#lang:checked) .ja { display: none; }
-body:has(#lang:checked) .en { display: block; }
+#lang:focus-visible + .lang-toggle { outline: 2px solid var(--ink); outline-offset: 2px; }
+.ja { display: none; }
+body:has(#lang:checked) .en { display: none; }
+body:has(#lang:checked) .ja { display: block; }
+span.ja, .lang-toggle .ja { display: none; }
+body:has(#lang:checked) span.ja { display: inline; }
+body:has(#lang:checked) span.en { display: none; }
+.lang-toggle .en { display: inline; }
+body:has(#lang:checked) .lang-toggle .en { display: none; }
+body:has(#lang:checked) .lang-toggle .ja { display: inline; }
 
-/* トグル内のラベルはブロックだと改行するので inline に固定する。
-   既定 (日本語表示) では「EN」だけ、切替後は「JA」だけを出す */
-.lang-toggle .ja { display: inline; }
-.lang-toggle .en { display: none; }
-body:has(#lang:checked) .lang-toggle .ja { display: none; }
-body:has(#lang:checked) .lang-toggle .en { display: inline; }
-
-@media (prefers-color-scheme: dark) {
-  body { color: #e6e6e6; background: #1f1f1f; }
-  h2 { border-top-color: #333; }
-  a { color: #6096e6; }
-  .meta { color: #999; }
-  .lang-toggle { background: #2a2a2a; color: #e6e6e6; border-color: #444; }
-  #lang:focus-visible + .lang-toggle { outline-color: #6096e6; }
+/* --- CTA --- */
+.cta {
+  display: inline-block; background: var(--ink); color: var(--cream);
+  border-radius: 14px; padding: 15px 28px; font-size: 15px; font-weight: 600;
+  text-decoration: none; letter-spacing: .01em;
+  transition: transform .2s ease;
 }
+.cta:hover { transform: translateY(-2px); }
+
+footer { padding: 28px; text-align: center; font-size: 13px; color: var(--muted); }
+footer a { color: var(--muted); }
+
+/* ============================================================
+   ドキュメント 2 ページ（/privacy/ /support/）
+   本文は法務文言なので一字も変えない。寸法・色・書体だけ地に合わせる。
+   ============================================================ */
+.doc {
+  margin: 0 auto; padding: 56px 24px 96px; max-width: 680px;
+  font-size: 16px;
+}
+.doc h1 {
+  font-family: "Newsreader", "Hiragino Mincho ProN", "Yu Mincho", serif;
+  font-size-adjust: from-font;
+  font-size: 34px; font-weight: 500; letter-spacing: -.035em;
+  margin: 0 0 4px; line-height: 1;
+}
+.doc h2 {
+  font-size: 19px; font-weight: 650; letter-spacing: -.005em;
+  margin: 46px 0 10px; padding-top: 22px; border-top: 1px solid var(--rule);
+}
+.doc h3 { font-size: 16px; font-weight: 650; margin: 26px 0 6px; }
+.doc p, .doc li { margin: 10px 0; }
+.doc ul { padding-left: 1.3em; }
+.doc a { color: var(--ink); text-decoration-color: var(--sage); text-underline-offset: 3px; }
+.doc a:hover { text-decoration-color: var(--ink); }
+.doc .meta { color: var(--muted); font-size: 14px; margin-bottom: 34px; }
+.doc .meta a { color: var(--muted); }
