@@ -95,6 +95,9 @@ body:has(#lang:checked) .lang-toggle .ja { display: inline; }
 
 footer { padding: 28px; text-align: center; font-size: 13px; color: var(--muted); }
 footer a { color: var(--muted); }
+/* 著作権表示は権利者の名前を書く欄なので、屋号ではなく本名。
+   ASC の「著作権」も 1.0.1 から同じ表記に揃える。 */
+.copyright { margin: 12px 0 0; font-size: 12px; color: var(--muted); }
 
 /* ============================================================
    ドキュメント 2 ページ（/privacy/ /support/）
@@ -110,6 +113,9 @@ footer a { color: var(--muted); }
   font-size: 34px; font-weight: 500; letter-spacing: -.035em;
   margin: 0 0 4px; line-height: 1;
 }
+/* 見出しの "Go on" は LP へ戻る導線。下線は出さず、地の文のリンクと区別する。 */
+.doc h1 a { color: inherit; text-decoration: none; }
+.doc h1 a:hover { text-decoration: underline; text-decoration-color: var(--sage); text-underline-offset: 6px; }
 .doc h2 {
   font-size: 19px; font-weight: 650; letter-spacing: -.005em;
   margin: 46px 0 10px; padding-top: 22px; border-top: 1px solid var(--rule);
@@ -121,3 +127,6 @@ footer a { color: var(--muted); }
 .doc a:hover { text-decoration-color: var(--ink); }
 .doc .meta { color: var(--muted); font-size: 14px; margin-bottom: 34px; }
 .doc .meta a { color: var(--muted); }
+/* 末尾の meta（ページ間リンク）だけは本文から離す。冒頭の meta は h1 の
+   サブタイトルなので近いままでよい。 */
+.doc .meta:last-child { margin-top: 52px; margin-bottom: 0; }

@@ -298,6 +298,34 @@ section { padding: 20vh 0; }
     #todo-b .strike { animation: strike-in linear both; animation-timeline: --tl-swipe; animation-range: contain 23% contain 31%; }
     @keyframes fade-label { to { color: #b0a893; } }
     #todo-b .txt { animation: fade-label linear both; animation-timeline: --tl-swipe; animation-range: contain 23% contain 31%; }
+
+    /* --- ピン留めシーンを 100svh の箱に収める（2026-08-27）------------------
+       .sticky は align-items:center + overflow:hidden なので、中身が箱より高いと
+       上下が均等に切り落とされる。実測: Swipe シーンの中身は 744px あり、
+       可視高さ 746px 未満のすべての端末で見出し "Swipe" と cap の注記が切れていた
+       （Safari は UI ぶん可視が低いので実質すべての iPhone が該当）。
+       原因は visual 200px × 2 ペイン = 400px が固定値だったこと。svh に追従させる。
+       ⚠️ 従来の検証は「横はみ出し・トグル位置・総高」しか見ておらず縦の clip を
+       測っていなかった。寸法を触ったら必ず contentH vs stickyH を測ること。 */
+    @media (max-width: 447px) {   /* 447px 未満 = 2 ペインが必ず縦積みになる幅 */
+      .step-title { margin-bottom: 12px; }
+      .step-lead  { margin-bottom: 6px; }
+      .compare    { margin-top: 3vh; row-gap: 16px; --vis: clamp(130px, 22svh, 200px); }   /* 下限は todo-card の自然高 130px に合わせる */
+      .visual     { aspect-ratio: auto; height: var(--vis); }
+      .deck       { width: var(--vis); }
+      .cap        { margin-top: 10px; }
+      /* todo-card は文字で高さが決まるので、--vis の下限 128px に合わせて詰める */
+      .todo-card  { padding: 10px 16px;
+                    background-image: repeating-linear-gradient(transparent 0 36px, rgba(32,29,24,.05) 36px 37px); }
+      .todo-item  { font-size: 13px; padding: 6px 0; }
+    }
+
+    /* 横向きと極小高さは寸法調整でも入らないので、ピン留め自体を降ろす。
+       （874×402 の landscape は幅が広いため上の縦積み調整には入らない） */
+    @media (max-height: 520px) {
+      .scene-swipe { height: auto; padding: 12vh 0; }
+      .scene-swipe .sticky { position: static; height: auto; overflow: visible; }
+    }
   }
 }
 </style>
@@ -464,6 +492,7 @@ section { padding: 20vh 0; }
 <footer>
   <span class="en" lang="en"><a href="/privacy/">Privacy Policy</a> · <a href="/support/">Support</a></span>
   <span class="ja" lang="ja"><a href="/privacy/">プライバシーポリシー</a> · <a href="/support/">サポート</a></span>
+  <p class="copyright">© 2026 Masafumi Koyama</p>
 </footer>
 
 <script>
