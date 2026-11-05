@@ -18,9 +18,12 @@
 <meta property="og:image:height" content="630">
 <meta property="og:image:alt" content="Go on">
 <meta name="twitter:card" content="summary_large_image">
-<!-- 見出しのセリフは self-host（/fonts/）。外部リクエストはこのページに 1 つも無い -->
+<!-- 見出しのセリフは self-host（/fonts/）。外部への読み込みは下の GA4 だけ（README「制約」） -->
 <link rel="preload" href="/fonts/newsreader-latin.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="/style.css">
+<!-- アクセス解析（GA4）。go-on.o2z0.com 以外では js/ga.js が送信しない -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-71RZL2MG8W"></script>
+<script defer src="/js/ga.js" data-ga-id="G-71RZL2MG8W" data-ga-host="go-on.o2z0.com"></script>
 <style>
 /* ============================================================
    Go on — LP 固有の演出 CSS
